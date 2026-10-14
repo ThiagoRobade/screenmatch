@@ -1,6 +1,6 @@
 package br.com.screenmatch;
 
-import br.com.screenmatch.service.ConsumoOmdbAPI;
+import br.com.screenmatch.principal.MenuPrincipal;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -15,10 +15,8 @@ public class ScreenmatchApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 
-		String url = System.getenv("API_URL");
-		var consumoOmdbAPI = new ConsumoOmdbAPI();
-		var json = consumoOmdbAPI.obterDados(url);
-		System.out.println(json);
+		MenuPrincipal menuPrincipal = new MenuPrincipal();
+		menuPrincipal.exibirMenu();
 
 	}
 }
