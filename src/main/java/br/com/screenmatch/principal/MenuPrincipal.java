@@ -3,9 +3,12 @@ package br.com.screenmatch.principal;
 import br.com.screenmatch.model.DadosEpisodio;
 import br.com.screenmatch.model.DadosSerie;
 import br.com.screenmatch.model.DadosTemporada;
+import br.com.screenmatch.model.Episodio;
 import br.com.screenmatch.service.ConsumoOmdbAPI;
 import br.com.screenmatch.service.ConversorDados;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -22,21 +25,22 @@ public class MenuPrincipal {
 
 
     public void exibirMenu() {
-        System.out.println("╔═══════════════════════════════════╗");
-        System.out.println("╠═════════════SCREENMATCH═══════════╣");
-        System.out.println("║1. Digite o nome da série          ║");
+        System.out.println("╔═════════════════════════════════════════════════════════════╗");
+        System.out.println("╠══════════════════════════SCREENMATCH════════════════════════╣");
+        System.out.println("║1. Digite o nome da série                                    ║");
+
         var nomeSerie = leitura.nextLine();
         var json = consumoOmdbAPI.obterDados(API_URL + nomeSerie.replace(" ", "+") + API_KEY);
         DadosSerie dadosSerie = conversorDados.obterDados(json, DadosSerie.class);
         System.out.println(dadosSerie);
 
-        List<DadosTemporada> dadosTemporadas = new ArrayList<>();
+        List<DadosTemporada> temporadas = new ArrayList<>();
         for (int i = 1; i <= dadosSerie.totalTemporadas(); i++) {
             json = consumoOmdbAPI.obterDados(API_URL + nomeSerie.replace(" ", "+") + API_KEY + "&Season=" + i);
             DadosTemporada dadosTemporada = conversorDados.obterDados(json, DadosTemporada.class);
-            dadosTemporadas.add(dadosTemporada);
+            temporadas.add(dadosTemporada);
         }
-        dadosTemporadas.forEach(System.out::println);
+        temporadas.forEach(System.out::println);
 
         /*
         -- ESSE TRECHO FOI SUBSTITUIDO POR UMA FUNÇÃO LAMBDA A PARTIR DA LINHA 49
@@ -48,10 +52,10 @@ public class MenuPrincipal {
         }
          */
 
-        dadosTemporadas.forEach(t -> t.episodios().forEach(e -> System.out.println(e.titulo())));
-        dadosTemporadas.forEach(System.out::println);
+        temporadas.forEach(t -> t.episodios().forEach(e -> System.out.println(e.titulo())));
+        temporadas.forEach(System.out::println);
 
-        List<DadosEpisodio> dadosEpisodios = dadosTemporadas.stream()
+        List<DadosEpisodio> dadosEpisodios = temporadas.stream()
                 .flatMap(t -> t.episodios().stream())
                 .collect(Collectors.toList());
 
@@ -62,5 +66,31 @@ public class MenuPrincipal {
                 .sorted(Comparator.comparing(DadosEpisodio::avaliacao).reversed())
                 .limit(5)
                 .forEach(System.out::println);
+
+        List<Episodio> episodios = temporadas.stream()
+                .flatMap(t -> t.episodios().stream()
+                        .map(d -> new Episodio(t.numero(), d)))
+                .collect(Collectors.toList());
+
+        episodios.forEach(System.out::println);
+
+        System.out.println("╔═════════════════════════════════════════════════════════════╗");
+        System.out.println("╠══════════════════════════SCREENMATCH════════════════════════╣");
+        System.out.println("║A partir de que ano você deseja ver os episódios?            ║");
+        var ano = leitura.nextInt();
+        leitura.nextLine();
+
+        LocalDate dataBusca = LocalDate.of(ano, 1, 1);
+
+        DateTimeFormatter formatador = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        episodios.stream()
+                .filter(e -> e.getDataLancamento() != null && e.getDataLancamento().isAfter(dataBusca))
+                .forEach(e -> System.out.println(
+                        "Temporada:  " + e.getTemporada() +
+                                " Episódio: " + e.getTitulo() +
+                                " Data lançamento: " + e.getDataLancamento().format(formatador)
+                ));
     }
 }
+
