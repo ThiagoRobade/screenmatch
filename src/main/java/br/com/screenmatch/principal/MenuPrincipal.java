@@ -10,6 +10,7 @@ import br.com.screenmatch.service.ConversorDados;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 public class MenuPrincipal {
@@ -73,16 +74,16 @@ public class MenuPrincipal {
 
         episodios.forEach(System.out::println);
 
-        System.out.println("Digite um trecho do titulo do episódio ");
-        var trechoTitulo = leitura.nextLine();
-        Optional<Episodio> episodioBuscado = episodios.stream()
-                .filter(e -> e.getTitulo().toUpperCase().contains(trechoTitulo.toUpperCase()))
-                .findFirst();
-        if (episodioBuscado.isPresent()) {
-            System.out.println("Episódio encontrado: " + episodioBuscado.get());
-        } else {
-            System.out.println("Episódio não encontrado.");
-        }
+//        System.out.println("Digite um trecho do titulo do episódio ");
+//        var trechoTitulo = leitura.nextLine();
+//        Optional<Episodio> episodioBuscado = episodios.stream()
+//                .filter(e -> e.getTitulo().toUpperCase().contains(trechoTitulo.toUpperCase()))
+//                .findFirst();
+//        if (episodioBuscado.isPresent()) {
+//            System.out.println("Episódio encontrado: " + episodioBuscado.get());
+//        } else {
+//            System.out.println("Episódio não encontrado.");
+//        }
 
 //
 //        System.out.println("╔═════════════════════════════════════════════════════════════╗");
@@ -102,6 +103,14 @@ public class MenuPrincipal {
 //                                " Episódio: " + e.getTitulo() +
 //                                " Data lançamento: " + e.getDataLancamento().format(formatador)
 //                ));
+
+        Map<Integer, Double> avaliacoesPorTemporada = episodios.stream()
+                .filter(e -> e.getAvaliacao() > 0.0)
+                .collect(Collectors.groupingBy(Episodio::getTemporada,
+                        Collectors.averagingDouble(Episodio::getAvaliacao)));
+
+        System.out.println("Avaliações por temporada: " + avaliacoesPorTemporada);
+
     }
 }
 
