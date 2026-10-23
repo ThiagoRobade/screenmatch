@@ -17,6 +17,5 @@ public class ScreenmatchApplication implements CommandLineRunner {
 
 		MenuPrincipal menuPrincipal = new MenuPrincipal();
 		menuPrincipal.exibirMenu();
-
 	}
 }
