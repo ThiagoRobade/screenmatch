@@ -3,8 +3,11 @@ package br.com.screenmatch.principal;
 import br.com.screenmatch.model.DadosSerie;
 import br.com.screenmatch.model.DadosTemporada;
 import br.com.screenmatch.model.Serie;
+import br.com.screenmatch.repository.SerieRepository;
 import br.com.screenmatch.service.ConsumoOmdbAPI;
 import br.com.screenmatch.service.ConversorDados;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -20,6 +23,12 @@ public class MenuPrincipal {
     private final String API_URL = System.getenv("API_URL");
     private final String API_KEY = System.getenv("API_KEY");
     private List<DadosSerie> dadosSeries = new ArrayList<>();
+    private SerieRepository repository;
+
+    public MenuPrincipal(SerieRepository repository) {
+        this.repository = repository;
+    }
+
 
     public void exibirMenu() {
         var opcao = -1;
@@ -57,7 +66,8 @@ public class MenuPrincipal {
 
     private void buscarSerieWeb() {
         DadosSerie dados = getDadosSerie();
-        dadosSeries.add(dados);
+        Serie serie = new Serie(dados);
+        repository.save(serie);
         System.out.println(dados);
     }
 
