@@ -37,6 +37,9 @@ public class Serie {
         this.sinopse = ConsultaGemini.obterTraducao(dadosSerie.sinopse().trim());
     }
 
+    public Serie() {
+    }
+
     public Long getId() {
         return id;
     }
