@@ -1,4 +1,4 @@
-package br.com.screenmatch.principal;
+package br.com.screenmatch.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

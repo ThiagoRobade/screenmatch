@@ -34,6 +34,7 @@ public class MenuPrincipal {
                     1 - Buscar séries
                     2 - Buscar episódios
                     3 - Listar séries buscadas
+                    4 - Consultar série por titulo
                     
                     0 - Sair                                 
                     """;
@@ -52,6 +53,9 @@ public class MenuPrincipal {
                 case 3:
                     listarSeriesBuscadas();
                     break;
+                case 4:
+                    buscarSeriePorTitulo();
+                    break;
                 case 0:
                     System.out.println("Saindo...");
                     break;
@@ -60,6 +64,8 @@ public class MenuPrincipal {
             }
         }
     }
+
+
 
     private void buscarSerieWeb() {
         DadosSerie dados = getDadosSerie();
@@ -81,9 +87,8 @@ public class MenuPrincipal {
         System.out.println("Escolha uma série para buscar episódios");
         var nomeSerie = leitura.nextLine();
 
-        Optional<Serie> serie = series.stream()
-                .filter(s -> s.getTitulo().toLowerCase().contains(nomeSerie.toLowerCase()))
-                .findFirst();
+        Optional<Serie> serie = repository.findByTituloContainingIgnoreCase(nomeSerie);
+
         if (serie.isPresent()) {
             var serieEncontrada = serie.get();
             List<DadosTemporada> temporadas = new ArrayList<>();
@@ -111,5 +116,17 @@ public class MenuPrincipal {
         series.stream()
                 .sorted(Comparator.comparing(Serie::getGenero))
                 .forEach(System.out::println);
+    }
+
+    private void buscarSeriePorTitulo() {
+        System.out.println("Digite o título da série:");
+        var nomeSerie = leitura.nextLine();
+
+        Optional<Serie> serieBuscada = repository.findByTituloContainingIgnoreCase(nomeSerie);
+        if (serieBuscada.isPresent()) {
+            System.out.println("Dados da série:" + serieBuscada.get());
+        } else {
+            System.out.println("Série não encontrada");
+        }
     }
 }

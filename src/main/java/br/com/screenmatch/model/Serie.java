@@ -1,6 +1,6 @@
 package br.com.screenmatch.model;
 
-import br.com.screenmatch.principal.ConsultaGemini;
+import br.com.screenmatch.service.ConsultaGemini;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ public class Serie {
     private String poster;
     private String sinopse;
 
-    @OneToMany(mappedBy = "serie", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "serie", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Episodio> episodios = new ArrayList<>();
 
     public Serie(DadosSerie dadosSerie) {
@@ -111,6 +111,7 @@ public class Serie {
     }
 
     public void setEpisodios(List<Episodio> episodios) {
+        episodios.forEach(e -> e.setSerie(this));
         this.episodios = episodios;
     }
 
